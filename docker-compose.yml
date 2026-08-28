@@ -1,18 +1,29 @@
 services:
-  yt-dlp-server:
+  youtube-dl:
+#    image: nbr23/youtube-dl-server:ef04de9-yt-dlp
     image: ghcr.io/3n8/yt-dlp-server:latest
-    build:
-      context: .
-      args:
-        YDLS_VERSION: local
-        RELEASETAG: local
+    hostname: youtube-dl-server.docker
     container_name: yt-dlp-server
     restart: unless-stopped
     user: "${PUID}:${PGID}"
-    environment:
-      - TZ=${TZ:-UTC}
+    networks:
+      - frontend
     ports:
-      - "8080:8080"
+      - ${HOST_IP}:8085:8080
+#    cpuset: 1-3
+    cpus: 8
+    mem_limit: 4G
+    environment:
+#      - PUID=${PUID}
+#      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
-      - ${DOCKER_HOME:-./data/config}:/config
-      - ${DOWNLOADS:-./data/downloads}:/data
+      - ${DOCKER_HOME}/youtube-dl:/config
+      - /mnt/mergerfs/media/youtube-dl:/data
+    dns:
+      - ${DNS1}
+      - ${DNS2}
+
+networks:
+  frontend:
+    external: true

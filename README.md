@@ -12,29 +12,37 @@ The container **refuses to start as root**. Use the `user:` directive.
 
 ## Run
 
+Pull `ghcr.io/3n8/yt-dlp-server:latest`. There is no image `build:` — same as the other 3n8 containers. UID/GID come from compose `user:`, not `PUID`/`PGID` env vars.
+
 ```yaml
 services:
-  yt-dlp-server:
-    image: yt-dlp-server:local
+  youtube-dl:
+    image: ghcr.io/3n8/yt-dlp-server:latest
+    hostname: youtube-dl-server.docker
     container_name: yt-dlp-server
     restart: unless-stopped
     user: "${PUID}:${PGID}"
+    networks:
+      - frontend
+    ports:
+      - ${HOST_IP}:8085:8080
+    cpus: 8
+    mem_limit: 4G
     environment:
       - TZ=${TZ}
-    ports:
-      - "8080:8080"
     volumes:
-      - ${DOCKER_HOME}/yt-dlp-server:/config
-      - ${DOWNLOADS}:/data
+      - ${DOCKER_HOME}/youtube-dl:/config
+      - /mnt/mergerfs/media/youtube-dl:/data
+    dns:
+      - ${DNS1}
+      - ${DNS2}
+
+networks:
+  frontend:
+    external: true
 ```
 
-```bash
-export PUID=$(id -u)
-export PGID=$(id -g)
-docker compose up -d --build
-```
-
-Open `http://localhost:8080/`.
+Downloads go to `/data`. Open `http://${HOST_IP}:8085/`.
 
 ### Volumes
 
