@@ -1,0 +1,18 @@
+services:
+  yt-dlp-server:
+    image: ghcr.io/3n8/yt-dlp-server:latest
+    build:
+      context: .
+      args:
+        YDLS_VERSION: local
+        RELEASETAG: local
+    container_name: yt-dlp-server
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      - TZ=${TZ:-UTC}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${DOCKER_HOME:-./data/config}:/config
+      - ${DOWNLOADS:-./data/downloads}:/data

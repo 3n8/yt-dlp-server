@@ -1,0 +1,41 @@
+ydl_server:
+  port: 8080
+  host: 0.0.0.0
+  debug: False
+  metadata_db_path: '/config/jobs.db'
+  output_playlist: '/data/%(playlist_title)s [%(playlist_id)s]/%(title)s.%(ext)s'
+  max_log_entries: 100
+  default_format: video/best
+  download_workers_count: 2
+  schedule_upcoming: True
+  schedule_check_interval: 60
+  schedule_max_attempts: 24
+  update_channel: nightly
+
+ydl_options:
+  output: '/data/%(title)s [%(id)s].%(ext)s'
+  cache-dir: '/config/cache'
+  ignore-errors: True
+  no-mtime: True
+
+aliases:
+  mp3:
+      name: 'MP3 audio'
+      ydl_options:
+        format: bestaudio/best
+        audio-quality: 0
+        extract-audio: True
+        audio-format: mp3
+  thumbnails:
+      name: 'Thumbnails'
+      ydl_options:
+        write-thumbnail: True
+        embed-thumbnail: True
+
+profiles:
+  podcast:
+      name: 'Audio Podcasts'
+      use: [mp3, thumbnails]
+      ydl_options:
+        output: '/data/Podcast/%(title)s [%(id)s].%(ext)s'
+        add-metadata: True

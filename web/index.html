@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="Description" content="Web frontend for yt-dlp">
+    <meta name="referrer" content="never">
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" href="./favicon.svg">
+    <title>yt-dlp-server</title>
+    <script>
+    (function(){
+      var t=localStorage.getItem('theme');
+      if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
