@@ -43,14 +43,34 @@ networks:
     external: true
 ```
 
-Downloads go to `/downloads` (`DOWNLOADS` env, default `/downloads`). Mount your host library on that path. Open `http://${HOST_IP}:8085/`.
+Open `http://${HOST_IP}:8085/`.
+
+### Environment
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `TZ` | UTC | Timezone |
+| `DOWNLOADS` | `/downloads` | Directory **inside the container** where files are written |
+
+`DOWNLOADS` is not a host path. The volume mount target must be the same path. Example that writes onto a media volume mounted at `/mnt/media`:
+
+```yaml
+environment:
+  - TZ=${TZ}
+  - DOWNLOADS=/mnt/media/youtube-dl
+volumes:
+  - ${DOCKER_HOME}/youtube-dl:/config
+  - media:/mnt/media
+```
+
+If `DOWNLOADS` is unset or ignored, files land in `/downloads` (or `/data` on old config) and will not show up on the host unless that path is mounted.
 
 ### Volumes
 
 | Path | Role |
 |------|------|
 | `/config` | `config.yml`, jobs database, yt-dlp binary, cache, logs |
-| `/downloads` | downloaded files (`DOWNLOADS`) |
+| whatever `DOWNLOADS` is | downloaded files (default `/downloads`) |
 
 ### yt-dlp on Alpine
 
