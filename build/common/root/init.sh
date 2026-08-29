@@ -109,7 +109,8 @@ mkdir -p /config/run 2>/dev/null
 chmod 775 /config/run 2>/dev/null
 set -e
 
-DOWNLOADS="${DOWNLOADS:-/downloads}"
+DOWNLOADS="$(echo "${DOWNLOADS:-/downloads}" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//;s:/*$::')"
+export DOWNLOADS
 mkdir -p /config/bin /config/cache /config/run "${DOWNLOADS}" 2>/dev/null || true
 if [[ -d "${DOWNLOADS}" ]]; then
     echo "[info] Download directory '${DOWNLOADS}'" | ts '%Y-%m-%d %H:%M:%.S'

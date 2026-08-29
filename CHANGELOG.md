@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.2] - 2026-08-29
+
+### Fixed
+
+- Pass `DOWNLOADS` through supervisord into the server process so compose env actually changes the download directory.
+
 ## [0.1.1] - 2026-08-29
 
 ### Changed

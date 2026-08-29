@@ -103,7 +103,7 @@ fn default_output_playlist() -> String {
 pub fn download_root() -> String {
     std::env::var("DOWNLOADS")
         .ok()
-        .map(|s| s.trim_end_matches('/').to_string())
+        .map(|s| s.trim().trim_end_matches('/').to_string())
         .filter(|s| !s.is_empty())
         .unwrap_or_else(|| "/downloads".into())
 }
