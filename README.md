@@ -30,9 +30,10 @@ services:
     mem_limit: 4G
     environment:
       - TZ=${TZ}
+      - DOWNLOADS=/downloads
     volumes:
       - ${DOCKER_HOME}/youtube-dl:/config
-      - /mnt/mergerfs/media/youtube-dl:/data
+      - /mnt/mergerfs/media/youtube-dl:/downloads
     dns:
       - ${DNS1}
       - ${DNS2}
@@ -42,14 +43,14 @@ networks:
     external: true
 ```
 
-Downloads go to `/data`. Open `http://${HOST_IP}:8085/`.
+Downloads go to `/downloads` (`DOWNLOADS` env, default `/downloads`). Mount your host library on that path. Open `http://${HOST_IP}:8085/`.
 
 ### Volumes
 
 | Path | Role |
 |------|------|
 | `/config` | `config.yml`, jobs database, yt-dlp binary, cache, logs |
-| `/data` | downloaded files |
+| `/downloads` | downloaded files (`DOWNLOADS`) |
 
 ### yt-dlp on Alpine
 

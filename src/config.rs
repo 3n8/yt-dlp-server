@@ -93,7 +93,58 @@ fn default_db_path() -> String {
     "/config/jobs.db".into()
 }
 fn default_output_playlist() -> String {
-    "/data/%(playlist_title)s [%(playlist_id)s]/%(title)s.%(ext)s".into()
+    format!(
+        "{}/{}",
+        download_root(),
+        "%(playlist_title)s [%(playlist_id)s]/%(title)s.%(ext)s"
+    )
+}
+
+pub fn download_root() -> String {
+    std::env::var("DOWNLOADS")
+        .ok()
+        .map(|s| s.trim_end_matches('/').to_string())
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| "/downloads".into())
+}
+
+fn rebase_download_path(path: &str) -> String {
+    let root = download_root();
+    for prefix in ["/downloads", "/data"] {
+        if path == prefix {
+            return root.clone();
+        }
+        if let Some(rest) = path.strip_prefix(prefix) {
+            if rest.starts_with('/') {
+                return format!("{root}{rest}");
+            }
+        }
+    }
+    path.to_string()
+}
+
+fn rebase_value(v: &mut Value) {
+    if let Value::String(s) = v {
+        *s = rebase_download_path(s);
+    }
+}
+
+fn apply_download_root(cfg: &mut AppConfig) {
+    if let Some(v) = cfg.ydl_options.get_mut("output") {
+        rebase_value(v);
+    }
+    if let Some(v) = cfg.ydl_options.get_mut("paths") {
+        rebase_value(v);
+    }
+    cfg.ydl_server.output_playlist = rebase_download_path(&cfg.ydl_server.output_playlist);
+    for profile in cfg.profiles.values_mut() {
+        if let Some(v) = profile.ydl_options.get_mut("output") {
+            rebase_value(v);
+        }
+        if let Some(v) = profile.ydl_options.get_mut("paths") {
+            rebase_value(v);
+        }
+    }
 }
 fn default_max_logs() -> usize {
     100
@@ -162,6 +213,8 @@ impl AppConfig {
         }
         let mut cfg = load_from(&path)?;
         resolve_aliases(&mut cfg)?;
+        apply_download_root(&mut cfg);
+        tracing::info!("Download directory {}", download_root());
         cfg.validate()?;
         Ok(cfg)
     }
@@ -212,7 +265,7 @@ impl AppConfig {
             .ydl_options
             .get("output")
             .and_then(|v| v.as_str())
-            .unwrap_or("/data/%(title)s [%(id)s].%(ext)s");
+            .unwrap_or("/downloads/%(title)s [%(id)s].%(ext)s");
         finished_path_from(output, self.ydl_options.get("paths"))
     }
 }

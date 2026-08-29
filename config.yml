@@ -3,7 +3,7 @@ ydl_server:
   host: 0.0.0.0
   debug: False
   metadata_db_path: '/config/jobs.db'
-  output_playlist: '/data/%(playlist_title)s [%(playlist_id)s]/%(title)s.%(ext)s'
+  output_playlist: '/downloads/%(playlist_title)s [%(playlist_id)s]/%(title)s.%(ext)s'
   max_log_entries: 100
   default_format: video/best
   download_workers_count: 2
@@ -13,7 +13,7 @@ ydl_server:
   update_channel: nightly
 
 ydl_options:
-  output: '/data/%(title)s [%(id)s].%(ext)s'
+  output: '/downloads/%(title)s [%(id)s].%(ext)s'
   cache-dir: '/config/cache'
   ignore-errors: True
   no-mtime: True
@@ -37,5 +37,5 @@ profiles:
       name: 'Audio Podcasts'
       use: [mp3, thumbnails]
       ydl_options:
-        output: '/data/Podcast/%(title)s [%(id)s].%(ext)s'
+        output: '/downloads/Podcast/%(title)s [%(id)s].%(ext)s'
         add-metadata: True

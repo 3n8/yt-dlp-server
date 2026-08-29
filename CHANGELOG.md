@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.1] - 2026-08-29
+
+### Changed
+
+- Download directory is `/downloads` (was `/data`).
+- Set `DOWNLOADS` to change that path at runtime; default config `output` paths under `/downloads` or `/data` follow it.
+
 ## [0.1.0] - 2026-08-29
 
 ### Added

@@ -13,9 +13,10 @@ services:
     mem_limit: 4G
     environment:
       - TZ=${TZ}
+      - DOWNLOADS=/downloads
     volumes:
       - ${DOCKER_HOME}/youtube-dl:/config
-      - /mnt/mergerfs/media/youtube-dl:/data
+      - /mnt/mergerfs/media/youtube-dl:/downloads
     dns:
       - ${DNS1}
       - ${DNS2}

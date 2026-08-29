@@ -109,7 +109,15 @@ mkdir -p /config/run 2>/dev/null
 chmod 775 /config/run 2>/dev/null
 set -e
 
-mkdir -p /config/bin /config/cache /config/run /data 2>/dev/null || true
+DOWNLOADS="${DOWNLOADS:-/downloads}"
+mkdir -p /config/bin /config/cache /config/run "${DOWNLOADS}" 2>/dev/null || true
+if [[ -d "${DOWNLOADS}" ]]; then
+    echo "[info] Download directory '${DOWNLOADS}'" | ts '%Y-%m-%d %H:%M:%.S'
+    set +e
+    chown "${PUID}":"${PGID}" "${DOWNLOADS}" 2>/dev/null
+    chmod 775 "${DOWNLOADS}" 2>/dev/null
+    set -e
+fi
 if [[ ! -x /config/bin/yt-dlp ]]; then
     if [[ -x /usr/lib/yt-dlp-server/yt-dlp ]]; then
         echo "[info] Seeding yt-dlp binary into /config/bin" | ts '%Y-%m-%d %H:%M:%.S'

@@ -35,13 +35,14 @@ ENV HOME=/config \
     YDL_STATIC_DIR=/usr/lib/yt-dlp-server/static \
     YDLS_VERSION=${YDLS_VERSION} \
     YDLS_RELEASE_DATE=${YDLS_RELEASE_DATE} \
+    DOWNLOADS=/downloads \
     XDG_CONFIG_HOME=/config \
     XDG_CACHE_HOME=/config/cache \
     PATH=/config/bin:/usr/local/bin/system/scripts/docker:/usr/local/bin/run:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN apk add --no-cache ffmpeg deno ca-certificates curl wget
 
-RUN mkdir -p /usr/lib/yt-dlp-server /config/bin /config/cache /data && \
+RUN mkdir -p /usr/lib/yt-dlp-server /config/bin /config/cache /downloads && \
     if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
       curl -fsSL -o /usr/lib/yt-dlp-server/yt-dlp \
         https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_musllinux_aarch64; \
@@ -50,7 +51,7 @@ RUN mkdir -p /usr/lib/yt-dlp-server /config/bin /config/cache /data && \
         https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_musllinux; \
     fi && \
     chmod 755 /usr/lib/yt-dlp-server/yt-dlp && \
-    chmod 777 /config /data /usr/lib/yt-dlp-server
+    chmod 777 /config /downloads /usr/lib/yt-dlp-server
 
 COPY --from=backend /src/target/release/yt-dlp-server /usr/local/bin/yt-dlp-server
 COPY --from=frontend /app/dist /usr/lib/yt-dlp-server/static
@@ -66,7 +67,7 @@ RUN chmod 755 /usr/local/bin/yt-dlp-server /usr/bin/init.sh && \
     echo "export YDLS_VERSION=${YDLS_VERSION}" >> /etc/image-build-info
 
 EXPOSE 8080
-VOLUME ["/config", "/data"]
+VOLUME ["/config", "/downloads"]
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/usr/bin/init.sh"]
